@@ -1,0 +1,9 @@
+# ┌───────────── minute (0 - 59)
+# │ ┌───────────── hour (0 - 23)
+# │ │ ┌───────────── day of month (1 - 31)
+# │ │ │ ┌───────────── month (1 - 12)
+# │ │ │ │ ┌───────────── day of week (0 - 6) (Sunday=0)
+# │ │ │ │ │
+# │ │ │ │ │
+# * * * * *  command to execute
+0 0 * * 0 curl http://fastapi:8000/run-scrapers >> /var/log/cron.log 2>&1

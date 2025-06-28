@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  fastapi:
+    build: .
+    container_name: grantly_app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  celery:
+    build: .
+    container_name: grantly_celery
+    command: celery -A tasks.run_scrapers worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  redis:
+    image: redis:alpine
+    container_name: grantly_redis
+    ports:
+      - "6379:6379"
+
+  cronjob:
+    build: .
+    container_name: grantly_cron
+    command: ["cron", "-f"]
+    volumes:
+      - .:/app
+      - ./crontab:/etc/cron.d/my-cron-job
+    depends_on:
+      - fastapi
+    environment:
+      - PYTHONUNBUFFERED=1
